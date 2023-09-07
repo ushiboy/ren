@@ -1,0 +1,146 @@
+openapi: '3.0.3'
+info:
+  title: 'Todo API'
+  description: API for managing Todo tasks.
+  version: '1.0.0'
+servers:
+  - url: http://{host}:{port}/api
+    description: for development
+    variables:
+      host:
+        default: localhost
+      port:
+        default: '3000'
+tags:
+  - name: Todos
+    description: Managing todos.
+paths:
+  /todos:
+    get:
+      tags:
+        - Todos
+      operationId: getTodos
+      summary: Get all Todo tasks
+      responses:
+        "200":
+          description: A list of Todo tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - todos
+                properties:
+                  todos:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Todo"
+    post:
+      tags:
+        - Todos
+      operationId: postTodos
+      summary: Create a new Todo task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  example: Buy milk
+              required:
+                - title
+      responses:
+        '201':
+          description: The created Todo task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        '400':
+          description: Todo task is invalid
+  /todos/{todoId}:
+    parameters:
+      - name: todoId
+        in: path
+        required: true
+        description: The ID of the Todo task to update, or delete
+        schema:
+          type: integer
+    put:
+      tags:
+        - Todos
+      operationId: putTodos
+      summary: Update a Todo task by ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  example: Buy milk
+                completed:
+                  type: boolean
+                  example: true
+              required:
+                - title
+                - completed
+      responses:
+        '200':
+          description: The updated Todo task
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        '400':
+          description: Todo task is invalid
+        '404':
+          description: Todo task not found
+    delete:
+      tags:
+        - Todos
+      operationId: deleteTodos
+      summary: Delete a Todo task by ID
+      responses:
+        '204':
+          description: Todo task deleted
+        '404':
+          description: Todo task not found
+
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Check mail.
+        completed:
+          type: boolean
+          example: false
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-01-01T00:00:00.000Z"
+      required:
+        - id
+        - title
+        - completed
+        - createdAt
+        - updatedAt

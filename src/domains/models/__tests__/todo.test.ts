@@ -1,19 +1,8 @@
-import { convertRawToTodo, TodoRaw } from "../todo";
+import { unCompletedTodo, unCompletedTodoRaw } from "@/__fixtures__/todo";
+import { convertRawToTodo } from "../todo";
 
 describe("convertRawToTodo", () => {
-  const raw: TodoRaw = {
-    id: 1,
-    title: "a",
-    completed: false,
-    createdAt: "2020-01-01",
-    updatedAt: "2020-01-02",
-  };
-
   test("レスポンスデータをTodoモデルに変換する", () => {
-    expect(convertRawToTodo(raw)).toEqual({
-      ...raw,
-      createdAt: new Date(raw.createdAt),
-      updatedAt: new Date(raw.updatedAt),
-    });
+    expect(convertRawToTodo(unCompletedTodoRaw)).toEqual(unCompletedTodo);
   });
 });

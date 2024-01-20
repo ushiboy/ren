@@ -5,9 +5,8 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { UseTodosPage, useTodosPage } from "..";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RepositoryContextProvider } from "@/presentations/contexts";
-import { repositoryComposition } from "@/repositoryComposition";
+import { QueryClient } from "@tanstack/react-query";
+import { WebApiWrap } from "@/__fixtures__/helper";
 
 describe("useTodosPage", () => {
   const client = new QueryClient();
@@ -16,16 +15,14 @@ describe("useTodosPage", () => {
     renderHook(() => useTodosPage(), {
       wrapper({ children }) {
         return (
-          <QueryClientProvider client={client}>
-            <RepositoryContextProvider
-              repositoryComposition={{
-                ...repositoryComposition,
-                getTodos: async () => [],
-              }}
-            >
-              {children}
-            </RepositoryContextProvider>
-          </QueryClientProvider>
+          <WebApiWrap
+            client={client}
+            overrideRepositories={{
+              getTodos: async () => [],
+            }}
+          >
+            {children}
+          </WebApiWrap>
         );
       },
     });

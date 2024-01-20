@@ -1,46 +1,34 @@
 import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { NewTodoForm } from "..";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { RepositoryContextProvider } from "@/presentations/contexts";
-import { repositoryComposition } from "@/repositoryComposition";
-import { Todo } from "@/domains/models";
+import { QueryClient } from "@tanstack/react-query";
 import { CreateTodo } from "@/repositories";
+import { unCompletedTodo } from "@/__fixtures__/todo";
+import { WebApiWrap } from "@/__fixtures__/helper";
 
 describe("NewTodoForm", () => {
   const onCancel = vi.fn();
   const onSaved = vi.fn();
-  const todo: Todo = {
-    id: 1,
-    title: "a",
-    completed: false,
-    createdAt: new Date("2020-01-01"),
-    updatedAt: new Date("2020-01-01"),
-  };
 
   const client = new QueryClient();
 
   const output = (createTodo?: CreateTodo) =>
     render(<NewTodoForm onCancel={onCancel} onSaved={onSaved} />, {
       wrapper({ children }) {
+        const overrides = createTodo
+          ? {
+              createTodo,
+            }
+          : undefined;
         return (
-          <QueryClientProvider client={client}>
-            <RepositoryContextProvider
-              repositoryComposition={{
-                ...repositoryComposition,
-                createTodo: createTodo
-                  ? createTodo
-                  : repositoryComposition.createTodo,
-              }}
-            >
-              {children}
-            </RepositoryContextProvider>
-          </QueryClientProvider>
+          <WebApiWrap client={client} overrideRepositories={overrides}>
+            {children}
+          </WebApiWrap>
         );
       },
     });
 
-  const createTodoOk = async () => todo;
+  const createTodoOk = async () => unCompletedTodo;
   const createTodoNg = async () => {
     throw new Error("error");
   };

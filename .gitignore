@@ -1,3 +1,4 @@
+src/drivers/gen
 dist
 dist-ssr
 *.local

@@ -18,6 +18,9 @@ export default defineConfig({
         "src/main.tsx",
         "src/mock.ts",
       ],
+      reportOnFailure: true,
+      clean: true,
+      all: true,
     },
     include: ["src/**/*.test.ts?(x)"],
     exclude: [

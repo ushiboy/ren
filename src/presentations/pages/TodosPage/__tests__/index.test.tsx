@@ -1,4 +1,5 @@
-import { render, waitFor } from "@testing-library/react";
+import { RenderResult, render, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TodosPage } from "..";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RepositoryContextProvider } from "@/presentations/contexts";
@@ -38,5 +39,20 @@ describe("TodosPage", () => {
     const r = output();
     await waitFor(() => client.isFetching());
     expect(r.getByTestId("todoTitle").textContent).toBe(todo.title);
+  });
+
+  describe("新しいTodoを追加ボタンを押した場合", () => {
+    let r: RenderResult;
+    beforeEach(async () => {
+      r = output();
+      await waitFor(() => client.isFetching());
+    });
+
+    test("新しいTodoの追加フォームを表示する", async () => {
+      const user = userEvent.setup();
+      await user.click(r.getByTestId("addNewTodoButton"));
+
+      expect(r.getByTestId("newTodoForm")).toBeInTheDocument();
+    });
   });
 });

@@ -1,16 +1,28 @@
-import { useGetTodos } from "@/presentations/hooks";
+import { TodosList } from "./components";
+import { NewTodoForm } from "./components/NewTodoForm";
+import { useTodosPage } from "./hooks";
 
 export function TodosPage() {
-  const { data } = useGetTodos();
+  const {
+    todos,
+    isShowNewTodoForm,
+    startAddingNewTodo,
+    stopAddingNewTodo,
+    refreshPage,
+  } = useTodosPage();
   return (
     <div data-testid="todoPage">
-      <ul>
-        {(data || []).map((r) => (
-          <li key={r.id} data-testid="todoTitle">
-            {r.title}
-          </li>
-        ))}
-      </ul>
+      <button
+        type="button"
+        data-testid="addNewTodoButton"
+        onClick={startAddingNewTodo}
+      >
+        {"新しいTodoを追加"}
+      </button>
+      {isShowNewTodoForm && (
+        <NewTodoForm onCancel={stopAddingNewTodo} onSaved={refreshPage} />
+      )}
+      <TodosList todos={todos} />
     </div>
   );
 }

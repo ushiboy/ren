@@ -1,6 +1,6 @@
 import { RenderResult, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { TodosPage } from "..";
+import { TodosPage } from "../";
 import { QueryClient } from "@tanstack/react-query";
 import { unCompletedTodo } from "@/__fixtures__/todo";
 import { WebApiWrap } from "@/__fixtures__/helper";
@@ -42,6 +42,21 @@ describe("TodosPage", () => {
       await user.click(r.getByTestId("addNewTodoButton"));
 
       expect(r.getByTestId("newTodoForm")).toBeInTheDocument();
+    });
+  });
+
+  describe("一覧のTodo行を押した場合", () => {
+    let r: RenderResult;
+    beforeEach(async () => {
+      r = output();
+      await waitFor(() => client.isFetching());
+    });
+
+    test("Todoの編集フォームを表示する", async () => {
+      const user = userEvent.setup();
+      await user.click(r.getByText(unCompletedTodo.title));
+
+      expect(r.getByTestId("editTodoForm")).toBeInTheDocument();
     });
   });
 });

@@ -1,4 +1,5 @@
 import { TodosList } from "./components";
+import { EditTodoForm } from "./components/EditTodoForm";
 import { NewTodoForm } from "./components/NewTodoForm";
 import { useTodosPage } from "./hooks";
 
@@ -6,8 +7,11 @@ export function TodosPage() {
   const {
     todos,
     isShowNewTodoForm,
+    selectedTodo,
     startAddingNewTodo,
     stopAddingNewTodo,
+    selectTodo,
+    clearSelectedTodo,
     refreshPage,
   } = useTodosPage();
   return (
@@ -22,7 +26,14 @@ export function TodosPage() {
       {isShowNewTodoForm && (
         <NewTodoForm onCancel={stopAddingNewTodo} onSaved={refreshPage} />
       )}
-      <TodosList todos={todos} />
+      <TodosList todos={todos} onClickRow={selectTodo} />
+      {selectedTodo && (
+        <EditTodoForm
+          todo={selectedTodo}
+          onCancel={clearSelectedTodo}
+          onSaved={refreshPage}
+        />
+      )}
     </div>
   );
 }

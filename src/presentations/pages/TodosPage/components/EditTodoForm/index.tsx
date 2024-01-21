@@ -5,14 +5,23 @@ export type Props = {
   todo: Todo;
   onCancel: () => void;
   onSaved: () => void;
+  onDeleted: () => void;
 };
 
-export function EditTodoForm({ todo, onCancel, onSaved }: Props) {
-  const { title, completed, error, setTitle, setCompleted, save } =
-    useEditTodoForm({
-      todo,
-      onSaved,
-    });
+export function EditTodoForm({ todo, onCancel, onSaved, onDeleted }: Props) {
+  const {
+    title,
+    completed,
+    error,
+    setTitle,
+    setCompleted,
+    save,
+    confirmAndDelete,
+  } = useEditTodoForm({
+    todo,
+    onSaved,
+    onDeleted,
+  });
   return (
     <form
       data-testid="editTodoForm"
@@ -37,6 +46,13 @@ export function EditTodoForm({ todo, onCancel, onSaved }: Props) {
       />
       <button type="button" data-testid="cancelButton" onClick={onCancel}>
         {"キャンセル"}
+      </button>
+      <button
+        type="button"
+        data-testid="deleteButton"
+        onClick={confirmAndDelete}
+      >
+        {"削除"}
       </button>
       <button type="submit" data-testid="saveButton">
         {"保存"}

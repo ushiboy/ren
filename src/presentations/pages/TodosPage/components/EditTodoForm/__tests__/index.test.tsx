@@ -2,30 +2,30 @@ import { render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { EditTodoForm } from "..";
 import { QueryClient } from "@tanstack/react-query";
-import { UpdateTodo } from "@/repositories";
+import { DeleteTodo, UpdateTodo } from "@/repositories";
 import { unCompletedTodo } from "@/__fixtures__/todo";
 import { WebApiWrap } from "@/__fixtures__/helper";
 
 describe("EditTodoForm", () => {
   const onCancel = vi.fn();
   const onSaved = vi.fn();
+  const onDeleted = vi.fn();
 
   const client = new QueryClient();
 
-  const output = (updateTodo?: UpdateTodo) =>
+  const output = (overrides?: {
+    updateTodo?: UpdateTodo;
+    deleteTodo?: DeleteTodo;
+  }) =>
     render(
       <EditTodoForm
         todo={unCompletedTodo}
         onCancel={onCancel}
         onSaved={onSaved}
+        onDeleted={onDeleted}
       />,
       {
         wrapper({ children }) {
-          const overrides = updateTodo
-            ? {
-                updateTodo,
-              }
-            : undefined;
           return (
             <WebApiWrap client={client} overrideRepositories={overrides}>
               {children}
@@ -35,8 +35,13 @@ describe("EditTodoForm", () => {
       },
     );
 
-  const updateTodoOk = async () => unCompletedTodo;
-  const updateTodoNg = async () => {
+  const updateTodoOk: UpdateTodo = async () => unCompletedTodo;
+  const updateTodoNg: UpdateTodo = async () => {
+    throw new Error("error");
+  };
+
+  const deleteTodoOk: DeleteTodo = async () => {};
+  const deleteTodoNg: DeleteTodo = async () => {
     throw new Error("error");
   };
 
@@ -47,7 +52,7 @@ describe("EditTodoForm", () => {
     describe("保存成功の場合", () => {
       test("onSavedイベントを発生させる", async () => {
         const user = userEvent.setup();
-        const r = output(updateTodoOk);
+        const r = output({ updateTodo: updateTodoOk });
 
         const titleText = r.getByTestId("titleText") as HTMLInputElement;
         await user.type(titleText, typeText);
@@ -71,7 +76,7 @@ describe("EditTodoForm", () => {
     describe("保存失敗の場合", () => {
       test("エラーメッセージを表示する", async () => {
         const user = userEvent.setup();
-        const r = output(updateTodoNg);
+        const r = output({ updateTodo: updateTodoNg });
 
         const saveButton = r.getByTestId("saveButton");
         await user.click(saveButton);
@@ -79,6 +84,44 @@ describe("EditTodoForm", () => {
 
         expect(r.getByTestId("errorMessage")).toBeInTheDocument();
         expect(onSaved).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("削除ボタンを押した場合", () => {
+    const windowConfirm = window.confirm;
+    beforeEach(() => {
+      window.confirm = vi.fn().mockImplementation(() => true);
+    });
+    afterEach(() => {
+      window.confirm = windowConfirm;
+    });
+
+    describe("削除成功の場合", () => {
+      test("onDeletedイベントを発生させる", async () => {
+        const user = userEvent.setup();
+        const r = output({ deleteTodo: deleteTodoOk });
+
+        expect(onDeleted).not.toHaveBeenCalled();
+
+        const deleteButton = r.getByTestId("deleteButton");
+        await user.click(deleteButton);
+        await waitFor(() => client.isMutating());
+        expect(onDeleted).toHaveBeenCalled();
+      });
+    });
+
+    describe("削除失敗の場合", () => {
+      test("エラーメッセージを表示する", async () => {
+        const user = userEvent.setup();
+        const r = output({ deleteTodo: deleteTodoNg });
+
+        const deleteButton = r.getByTestId("deleteButton");
+        await user.click(deleteButton);
+        await waitFor(() => client.isMutating());
+
+        expect(r.getByTestId("errorMessage")).toBeInTheDocument();
+        expect(onDeleted).not.toHaveBeenCalled();
       });
     });
   });

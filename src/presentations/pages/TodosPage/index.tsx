@@ -32,6 +32,7 @@ export function TodosPage() {
           todo={selectedTodo}
           onCancel={clearSelectedTodo}
           onSaved={refreshPage}
+          onDeleted={refreshPage}
         />
       )}
     </div>

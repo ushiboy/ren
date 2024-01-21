@@ -5,7 +5,7 @@ import {
 } from "@/repositoryComposition";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-type OverrideRepositories = Partial<RepositoryComposition>;
+export type OverrideRepositories = Partial<RepositoryComposition>;
 
 type WebApiWrapProps = {
   client: QueryClient;

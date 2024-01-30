@@ -14,6 +14,7 @@ export default defineConfig({
       include: ["src/**/*"],
       exclude: [
         "src/drivers/gen/**/*",
+        "src/presentations/components/ui/**/*",
         "src/vite-env.d.ts",
         "src/main.tsx",
         "src/mock.ts",

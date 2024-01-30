@@ -62,7 +62,7 @@ describe("EditTodoForm", () => {
           "completedCheck",
         ) as HTMLInputElement;
         await user.click(completedCheck);
-        expect(completedCheck.checked).toBe(true);
+        expect(completedCheck.getAttribute("aria-checked")).toBe("true");
 
         expect(onSaved).not.toHaveBeenCalled();
 

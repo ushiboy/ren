@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 export function useTodosPage() {
   const [isShowNewTodoForm, setShowNewTodoForm] = useState(false);
   const [selectedTodo, selectTodo] = useState<Todo | undefined>(undefined);
-  const { data, refetch } = useGetTodos();
+  const { data, isFetching, refetch } = useGetTodos();
 
   const startAddingNewTodo = useCallback(
     () => setShowNewTodoForm(true),
@@ -32,6 +32,7 @@ export function useTodosPage() {
     isShowNewTodoForm,
     todos: data || [],
     selectedTodo,
+    isLoading: isFetching,
     startAddingNewTodo,
     stopAddingNewTodo,
     refreshPage,

@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { RepositoryContextProvider } from "./presentations/contexts";
 import { repositoryComposition } from "./repositoryComposition";
 import { App } from "./presentations/App";
+import "./global.css";
 
 (async () => {
   if (process.env.NODE_ENV === "development") {

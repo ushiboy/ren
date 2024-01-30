@@ -1,5 +1,20 @@
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+} from "@/presentations/components/ui/dialog";
+import { Button } from "@/presentations/components/ui/button";
+import { Label } from "@/presentations/components/ui/label";
+import { Input } from "@/presentations/components/ui/input";
 import { Todo } from "@/domains/models";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@/presentations/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { useEditTodoForm } from "./hooks";
+import { Checkbox } from "@/presentations/components/ui/checkbox";
 
 export type Props = {
   todo: Todo;
@@ -23,41 +38,69 @@ export function EditTodoForm({ todo, onCancel, onSaved, onDeleted }: Props) {
     onDeleted,
   });
   return (
-    <form
-      data-testid="editTodoForm"
-      onSubmit={(e) => {
-        e.preventDefault();
-        save();
-      }}
-    >
-      <label>title</label>
-      <input
-        type="text"
-        value={title}
-        data-testid="titleText"
-        onChange={(e) => setTitle(e.target.value)}
-      />
-      <label>completed</label>
-      <input
-        type="checkbox"
-        data-testid="completedCheck"
-        checked={completed}
-        onChange={(e) => setCompleted(e.target.checked)}
-      />
-      <button type="button" data-testid="cancelButton" onClick={onCancel}>
-        {"キャンセル"}
-      </button>
-      <button
-        type="button"
-        data-testid="deleteButton"
-        onClick={confirmAndDelete}
-      >
-        {"削除"}
-      </button>
-      <button type="submit" data-testid="saveButton">
-        {"保存"}
-      </button>
-      {error && <p data-testid="errorMessage">{error.message}</p>}
-    </form>
+    <Dialog open>
+      <DialogContent>
+        <form
+          data-testid="editTodoForm"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save();
+          }}
+        >
+          <div className="mb-4">
+            <Label>title</Label>
+            <Input
+              type="text"
+              value={title}
+              data-testid="titleText"
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="completedCheck"
+                data-testid="completedCheck"
+                checked={completed}
+                onCheckedChange={(checked) => setCompleted(checked === true)}
+              />
+              <Label htmlFor="completedCheck">completed</Label>
+            </div>
+          </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription data-testid="errorMessage">
+                {error.message}
+              </AlertDescription>
+            </Alert>
+          )}
+          <DialogFooter className="justify-between">
+            <Button
+              type="button"
+              variant="destructive"
+              data-testid="deleteButton"
+              onClick={confirmAndDelete}
+            >
+              {"削除"}
+            </Button>
+            <div className="flex space-x-2">
+              <Button
+                type="button"
+                variant="outline"
+                data-testid="cancelButton"
+                onClick={onCancel}
+              >
+                {"キャンセル"}
+              </Button>
+              <Button type="submit" data-testid="saveButton">
+                {"保存"}
+              </Button>
+            </div>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

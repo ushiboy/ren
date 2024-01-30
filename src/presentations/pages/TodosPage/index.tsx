@@ -1,13 +1,16 @@
+import { Button } from "@/presentations/components/ui/button";
 import { TodosList } from "./components";
 import { EditTodoForm } from "./components/EditTodoForm";
 import { NewTodoForm } from "./components/NewTodoForm";
 import { useTodosPage } from "./hooks";
+import { LoadingMask } from "@/presentations/components/shared";
 
 export function TodosPage() {
   const {
     todos,
     isShowNewTodoForm,
     selectedTodo,
+    isLoading,
     startAddingNewTodo,
     stopAddingNewTodo,
     selectTodo,
@@ -16,13 +19,13 @@ export function TodosPage() {
   } = useTodosPage();
   return (
     <div data-testid="todoPage">
-      <button
+      <Button
         type="button"
         data-testid="addNewTodoButton"
         onClick={startAddingNewTodo}
       >
         {"新しいTodoを追加"}
-      </button>
+      </Button>
       {isShowNewTodoForm && (
         <NewTodoForm onCancel={stopAddingNewTodo} onSaved={refreshPage} />
       )}
@@ -35,6 +38,7 @@ export function TodosPage() {
           onDeleted={refreshPage}
         />
       )}
+      <LoadingMask show={isLoading} />
     </div>
   );
 }
